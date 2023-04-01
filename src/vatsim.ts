@@ -1,0 +1,98 @@
+import { Database } from "./lib/database.js";
+
+export interface Controller {
+	cid: string;
+	name: string;
+	callsign: string;
+	frequency: string;
+	facility: number;
+	rating: number;
+	server: string;
+	visualRange: number;
+	textAtis: string[] | null;
+	lastUpdated: Date;
+	logonTime: Date;
+}
+
+export class Vatsim {
+	private initialized = false;
+
+	private onlineControllers: Controller[] = [];
+	private newControllers: Controller[] = [];
+
+	public async initialize(): Promise<void> {
+		if (this.initialized) {
+			return;
+		}
+
+		this.onlineControllers = await this.fetchControllers();
+
+		setInterval(async () => {
+			const onlineControllers = await this.fetchControllers();
+
+			this.newControllers = await this.filterNewControllers(onlineControllers);
+
+			for (const newController of this.newControllers) {
+				await Vatsim.sendDiscordNotification(newController);
+			}
+
+			this.onlineControllers = onlineControllers;
+		}, 15 * 1000);
+
+		this.initialized = true;
+	}
+
+	private async fetchControllers(): Promise<Controller[]> {
+		const res = await fetch("https://data.vatsim.net/v3/vatsim-data.json");
+
+		if (!res.ok) {
+			throw new Error("Failed to fetch data");
+		}
+
+		const data = await res.json();
+
+		return data.controllers;
+	}
+
+	private async filterNewControllers(onlineControllers: Controller[]): Promise<Controller[]> {
+		const newControllers: Controller[] = [];
+
+		for (const onlineController of onlineControllers) {
+			const found = this.onlineControllers.find((controller) => controller.cid === onlineController.cid);
+
+			if (!found) {
+				newControllers.push(onlineController);
+			}
+		}
+
+		return newControllers;
+	}
+
+	public static async sendDiscordNotification(controller: Controller): Promise<void> {
+		const webhooks = await Database.getWebhooksFromCallsign(controller.callsign);
+
+		for (const webhook of webhooks) {
+			await fetch(webhook, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					content: `Controller ${controller.name} (${controller.callsign}) has logged on`,
+				}),
+			});
+		}
+	}
+
+	public async forceRefresh(): Promise<void> {
+		this.onlineControllers = await this.fetchControllers();
+	}
+
+	public getOnlineControllers(): Controller[] {
+		return this.onlineControllers;
+	}
+
+	public getNewControllers(): Controller[] {
+		return this.newControllers;
+	}
+}
