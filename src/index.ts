@@ -3,6 +3,11 @@ import express from "express";
 import { Vatsim } from "./vatsim.js";
 
 const app = express();
+app.use((req, res, next) => {
+	res.header("Access-Control-Allow-Origin", "*");
+	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+	next();
+});
 
 const vatsim = new Vatsim();
 await vatsim.initialize();
