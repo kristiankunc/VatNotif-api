@@ -1,5 +1,4 @@
 import express from "express";
-
 import { Vatsim } from "./vatsim.js";
 
 const app = express();

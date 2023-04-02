@@ -32,12 +32,16 @@ export class Database {
 
 		const affectedCids = rows.map((row: { cid: string }) => row.cid);
 
-		sql = "SELECT webhook_url FROM discord_notifications WHERE cid = ?";
-		values = [affectedCids];
+		let webhookUrls: string[] = [];
 
-		rows = await this.query(sql, values);
+		for (const cid of affectedCids) {
+			sql = "SELECT webhook_url FROM discord_notifications WHERE cid = ?";
+			values = [cid];
 
-		const webhookUrls = rows.map((row: { webhook_url: string }) => row.webhook_url);
+			rows = await this.query(sql, values);
+
+			webhookUrls = webhookUrls.concat(rows.map((row: { webhook_url: string }) => row.webhook_url));
+		}
 
 		return webhookUrls;
 	}
