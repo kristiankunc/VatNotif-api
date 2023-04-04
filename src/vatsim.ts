@@ -78,7 +78,18 @@ export class Vatsim {
 					"Content-Type": "application/json",
 				},
 				body: JSON.stringify({
-					content: `Controller ${controller.name} (${controller.callsign}) has logged on`,
+					content: null,
+					embeds: [
+						{
+							title: "New VatNotif notification!",
+							description: `Controller **${controller.name}** has logged on as **${controller.callsign}**!`,
+							color: 2329275,
+							timestamp: new Date().toISOString(),
+						},
+					],
+					username: "VatNotif",
+					avatar_url: "https://vatnotif.kristn.co.uk/favicon.png",
+					attachments: [],
 				}),
 			});
 		}
