@@ -1,7 +1,7 @@
 import { Database } from "./lib/database.js";
 
 export interface Controller {
-	cid: string;
+	cid: number;
 	name: string;
 	callsign: string;
 	frequency: string;
@@ -29,10 +29,15 @@ export class Vatsim {
 
 		setInterval(async () => {
 			const onlineControllers = await this.fetchControllers();
+			const ignoredCids = await Database.getIgnoredCids();
 
 			this.newControllers = await this.filterNewControllers(onlineControllers);
 
 			for (const newController of this.newControllers) {
+				if (ignoredCids.includes(newController.cid)) {
+					continue;
+				}
+
 				await Vatsim.sendDiscordNotification(newController);
 			}
 

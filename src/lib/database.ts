@@ -45,4 +45,12 @@ export class Database {
 
 		return webhookUrls;
 	}
+
+	public static async getIgnoredCids(): Promise<number[]> {
+		const sql = "SELECT cid FROM ignored_cids";
+
+		const rows = await this.query(sql);
+
+		return rows.map((row: { cid: number }) => row.cid);
+	}
 }
