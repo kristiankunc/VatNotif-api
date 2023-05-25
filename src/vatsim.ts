@@ -96,7 +96,7 @@ export class Vatsim {
 						},
 					],
 					username: "VatNotif",
-					avatar_url: "https://vatnotif.kristn.co.uk/favicon.png",
+					avatar_url: "https://vatnotif.kristn.co.uk/brand/logo.png",
 					attachments: [],
 				}),
 			});
