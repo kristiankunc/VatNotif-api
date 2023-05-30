@@ -11,8 +11,9 @@ To apply this schema, run the following command on your MySQL server:
 ```bash
 $ mysql -u <username> -p < schema.sql
 ```
+After that, edit the [mysql.ts.example](src/conf/mysql.ts.example) config file to match your MySQL server details and rename it to `mysql.ts`.
 
-To build && run this projetc, first clone it
+To build && run this project, first clone it
 ```bash
 $ git clone git@github.com:kristiankunc/VatNotif-api.git
 ```
