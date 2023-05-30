@@ -4,6 +4,10 @@ The api server used to track online controllers for the vatNotif service (https:
 This api is **free** to use by anyone without any API key required.
 
 ## Building
+### MySQL
+
+This project requires a MySQL database to be running. The database schema can be found in the [schema.sql](schema.sql) file.
+
 To build && run this projetc, first clone it
 ```bash
 $ git clone git@github.com:kristiankunc/VatNotif-api.git
