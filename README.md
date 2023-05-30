@@ -6,7 +6,11 @@ This api is **free** to use by anyone without any API key required.
 ## Building
 ### MySQL
 
-This project requires a MySQL database to be running. The database schema can be found in the [schema.sql](schema.sql) file.
+This project requires a MySQL database to be running. The database schema can be found in the [schema.sql](src/lib/schema.sql) file.
+To apply this schema, run the following command on your MySQL server:
+```bash
+$ mysql -u <username> -p < schema.sql
+```
 
 To build && run this projetc, first clone it
 ```bash
