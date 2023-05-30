@@ -1,8 +1,8 @@
 -- Create database
-CREATE DATABASE your_database_name;
+CREATE DATABASE vatnotif;
 
 -- Use the newly created database
-USE your_database_name;
+USE vatnotif;
 
 -- Create table discord_notifications
 CREATE TABLE discord_notifications (
