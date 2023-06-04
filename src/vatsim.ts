@@ -53,6 +53,7 @@ export class Vatsim {
 			res = await fetch("https://data.vatsim.net/v3/vatsim-data.json");
 		} catch (err) {
 			console.error(err);
+			return this.onlineControllers;
 		}
 
 		if (!res || !res.ok) {
