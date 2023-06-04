@@ -1,19 +1,5 @@
 import { Database } from "./lib/database.js";
-
-export interface Controller {
-	cid: number;
-	name: string;
-	callsign: string;
-	frequency: string;
-	facility: number;
-	rating: number;
-	server: string;
-	visualRange: number;
-	textAtis: string[] | null;
-	lastUpdated: Date;
-	logonTime: Date;
-}
-
+import { Controller } from "./types/controllers.js";
 export class Vatsim {
 	private initialized = false;
 
