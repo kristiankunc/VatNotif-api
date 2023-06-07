@@ -16,13 +16,10 @@ export class Vatsim {
 		setInterval(async () => {
 			const onlineControllers = await this.fetchControllers();
 			const ignoredCids = await Database.getIgnoredCids();
-			console.log(ignoredCids);
 			this.newControllers = await this.filterNewControllers(onlineControllers);
 
 			for (const newController of this.newControllers) {
-				if (ignoredCids.includes(newController.cid)) {
-					continue;
-				} else {
+				if (!ignoredCids.includes(newController.cid)) {
 					await Vatsim.sendDiscordNotification(newController);
 				}
 			}
