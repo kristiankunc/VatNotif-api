@@ -10,6 +10,7 @@ app.use((req, res, next) => {
 
 const vatsim = new Vatsim();
 await vatsim.initialize();
+await vatsim.forceRefresh();
 
 app.get("/", (req, res) => {
 	res.json({ message: "VatNotif API" });
@@ -21,6 +22,10 @@ app.get("/controllers/online", async (req, res) => {
 
 app.get("/controllers/new", async (req, res) => {
 	res.json(vatsim.getNewControllers());
+});
+
+app.get("/controllers/down", async (req, res) => {
+	res.json(vatsim.getDownControllers());
 });
 
 app.listen(8000, () => {

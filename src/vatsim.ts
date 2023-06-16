@@ -1,10 +1,12 @@
 import { Database } from "./lib/database.js";
+import { DiscordNotifications } from "./notifications/discord.js";
 import { Controller } from "./types/controllers.js";
 export class Vatsim {
 	private initialized = false;
 
 	private onlineControllers: Controller[] = [];
 	private newControllers: Controller[] = [];
+	private downControllers: Controller[] = [];
 
 	public async initialize(): Promise<void> {
 		if (this.initialized) {
@@ -17,10 +19,17 @@ export class Vatsim {
 			const onlineControllers = await this.fetchControllers();
 			const ignoredCids = await Database.getIgnoredCids();
 			this.newControllers = await this.filterNewControllers(onlineControllers);
+			this.downControllers = await this.filterDownControllers(onlineControllers);
 
 			for (const newController of this.newControllers) {
 				if (!ignoredCids.includes(newController.cid)) {
-					await Vatsim.sendDiscordNotification(newController);
+					await DiscordNotifications.sendOnlineNotification(newController);
+				}
+			}
+
+			for (const downController of this.downControllers) {
+				if (!ignoredCids.includes(downController.cid)) {
+					await DiscordNotifications.sendDownNotification(downController);
 				}
 			}
 
@@ -60,31 +69,18 @@ export class Vatsim {
 		return newControllers;
 	}
 
-	public static async sendDiscordNotification(controller: Controller): Promise<void> {
-		const webhooks = await Database.getWebhooksFromCallsign(controller.callsign);
+	private async filterDownControllers(onlineControllers: Controller[]): Promise<Controller[]> {
+		const downControllers: Controller[] = [];
 
-		for (const webhook of webhooks) {
-			await fetch(webhook, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					content: null,
-					embeds: [
-						{
-							title: "New VatNotif notification!",
-							description: `Controller **${controller.name}** has logged on as **${controller.callsign}**!`,
-							color: 2329275,
-							timestamp: new Date().toISOString(),
-						},
-					],
-					username: "VatNotif",
-					avatar_url: "https://vatnotif.kristn.co.uk/brand/logo.webp",
-					attachments: [],
-				}),
-			});
+		for (const onlineController of onlineControllers) {
+			const found = this.onlineControllers.find((controller) => controller.cid === onlineController.cid);
+
+			if (!found) {
+				downControllers.push(onlineController);
+			}
 		}
+
+		return downControllers;
 	}
 
 	public async forceRefresh(): Promise<void> {
@@ -97,5 +93,9 @@ export class Vatsim {
 
 	public getNewControllers(): Controller[] {
 		return this.newControllers;
+	}
+
+	public getDownControllers(): Controller[] {
+		return this.downControllers;
 	}
 }
