@@ -16,7 +16,7 @@ export class DiscordNotifications {
 					embeds: [
 						{
 							title: "New VatNotif notification!",
-							description: `🆙 Controller **${controller.name}** has logged on as **${controller.callsign}**!`,
+							description: `🆙 Controller **${controller.name}** (${controller.cid}) has logged on as **${controller.callsign}**!`,
 							color: 3319890,
 							timestamp: new Date().toISOString(),
 						},
@@ -43,7 +43,7 @@ export class DiscordNotifications {
 					embeds: [
 						{
 							title: "New VatNotif notification!",
-							description: `🔻 Controller **${controller.name}** has logged off as **${controller.callsign}**!`,
+							description: `🔻 Controller **${controller.name}** (${controller.cid}) has logged off from **${controller.callsign}**!`,
 							color: 14298413,
 							timestamp: new Date().toISOString(),
 						},
