@@ -72,11 +72,11 @@ export class Vatsim {
 	private async filterDownControllers(onlineControllers: Controller[]): Promise<Controller[]> {
 		const downControllers: Controller[] = [];
 
-		for (const onlineController of onlineControllers) {
-			const found = this.onlineControllers.find((controller) => controller.cid === onlineController.cid);
+		for (const controller of this.onlineControllers) {
+			const found = onlineControllers.find((onlineController) => onlineController.cid === controller.cid);
 
 			if (!found) {
-				downControllers.push(onlineController);
+				downControllers.push(controller);
 			}
 		}
 
