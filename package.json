@@ -16,7 +16,7 @@
 		"@types/node": "^20.3.3",
 		"install": "^0.13.0",
 		"nodemon": "^2.0.22",
-		"npm": "^9.7.2",
+		"npm": "^9.8.0",
 		"typescript": "^5.1.6"
 	},
 	"dependencies": {
