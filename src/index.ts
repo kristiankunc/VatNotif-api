@@ -10,6 +10,7 @@ app.use((req, res, next) => {
 	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 	next();
 });
+app.use(express.json());
 
 webpush.setVapidDetails("mailto: kristian@kristn.co.uk", VAPIDKeys.publicKey, VAPIDKeys.privateKey);
 
@@ -38,10 +39,11 @@ app.get("/push/public-key", async (req, res) => {
 });
 
 app.post("/push/subscribe", async (req, res) => {
+	if (!req.body) return res.status(400).send("No body");
 	const cid = req.body.cid;
 	const subscription = req.body.subscription;
 
-	if (Number.isNaN(cid) || cid < 0 || cid > 999999) {
+	if (!cid || isNaN(cid) || cid < 0 || cid > 99999999) {
 		res.status(400).send("Invalid CID");
 		return;
 	}
@@ -50,7 +52,7 @@ app.post("/push/subscribe", async (req, res) => {
 
 	webpush.sendNotification(subscription, JSON.stringify({ title: "VatNotif", body: "You are now subscribed to VatNotif push notifications" }));
 
-	res.send(201);
+	res.sendStatus(201);
 });
 
 app.listen(8000, () => {
