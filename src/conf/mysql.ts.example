@@ -1,10 +1,5 @@
-export interface MysqlConfigOptions {
-	host: string;
-	port: number;
-	username: string;
-	password: string;
-	database: string;
-}
+import { MysqlConfigOptions } from "../types/mysql-config.js";
+
 export const mysqlConfig: MysqlConfigOptions = {
 	host: "localhost",
 	port: 3306,

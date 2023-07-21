@@ -1,0 +1,8 @@
+interface VAPIDKeys {
+    publicKey: string;
+    privateKey: string;
+}
+export const VAPIDKeys: VAPIDKeys = {
+    publicKey: "1234,
+    privateKey: "5678"
+}

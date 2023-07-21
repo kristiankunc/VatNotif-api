@@ -53,4 +53,14 @@ export class Database {
 
 		return rows.map((row: { cid: number }) => row.cid);
 	}
+
+	public static async registerPushNotification(cid: string, subscription: any): Promise<void> {
+		const query = `
+		INSERT INTO push_notifications (cid, endpoint, expiration_time, p256dh, auth)
+		VALUES ($1, $2, $3, $4, $5)
+	  `;
+		const values = [cid, subscription.endpoint, subscription.expirationTime, subscription.keys.p256dh, subscription.keys.auth];
+
+		await this.query(query, values);
+	}
 }
