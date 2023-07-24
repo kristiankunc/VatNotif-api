@@ -50,7 +50,14 @@ app.post("/push/subscribe", async (req, res) => {
 
 	Database.registerPushNotification(cid, subscription);
 
-	webpush.sendNotification(subscription, JSON.stringify({ title: "VatNotif", body: "You are now subscribed to VatNotif push notifications" }));
+	webpush.sendNotification(
+		subscription,
+		JSON.stringify({
+			title: "VatNotif",
+			body: "You are now subscribed to VatNotif push notifications",
+			icon: "https://vatnotif.kristn.co.uk/brand/logo.webp",
+		})
+	);
 
 	res.sendStatus(201);
 });
