@@ -1,5 +1,6 @@
 import { Database } from "./lib/database.js";
 import { DiscordNotifications } from "./notifications/discord.js";
+import { PushNotifications } from "./notifications/push.js";
 import { Controller } from "./types/controllers.js";
 export class Vatsim {
 	private initialized = false;
@@ -24,12 +25,14 @@ export class Vatsim {
 			for (const newController of this.newControllers) {
 				if (!ignoredCids.includes(newController.cid)) {
 					await DiscordNotifications.sendOnlineNotification(newController);
+					await PushNotifications.sendOnlineNotification(newController);
 				}
 			}
 
 			for (const downController of this.downControllers) {
 				if (!ignoredCids.includes(downController.cid)) {
 					await DiscordNotifications.sendDownNotification(downController);
+					await PushNotifications.sendDownNotification(downController);
 				}
 			}
 
