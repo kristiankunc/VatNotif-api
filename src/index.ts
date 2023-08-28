@@ -55,7 +55,10 @@ app.post("/push/subscribe", async (req, res) => {
 		JSON.stringify({
 			title: "VatNotif",
 			body: "You are now subscribed to VatNotif push notifications",
-			icon: "https://vatnotif.kristn.co.uk/brand/logo.webp",
+			icon: "https://vatnotif.kristn.co.uk/brand/logo.png",
+			badge: "https://vatnotif.kristn.co.uk/brand/logo.png",
+			image: "https://vatnotif.kristn.co.uk/brand/logo.png",
+			vibrate: [100, 50, 100],
 		})
 	);
 
