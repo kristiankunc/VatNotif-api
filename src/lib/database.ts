@@ -26,7 +26,7 @@ export class Database {
 	}
 
 	public static async getWebhooksFromCallsign(callsign: string): Promise<string[]> {
-		let sql = "SELECT cid FROM watched_callsigns WHERE callsign LIKE ?";
+		let sql = "SELECT cid FROM watched_callsigns WHERE callsign = ?";
 		let values = [callsign];
 
 		let rows = await this.query(sql, values);
