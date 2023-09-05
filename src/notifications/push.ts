@@ -6,8 +6,8 @@ import webpush from "web-push";
 webpush.setVapidDetails("mailto: kristian@kristn.co.uk", VAPIDKeys.publicKey, VAPIDKeys.privateKey);
 
 export class PushNotifications {
-	public static async sendOnlineNotification(controller: Controller): Promise<void> {
-		const subscriptions = await Database.getPushFromCallsign(controller.callsign);
+	public static async sendOnlineNotification(controller: Controller, affectedCids: number[]): Promise<void> {
+		const subscriptions = await Database.getPushFromCallsign(controller.callsign, affectedCids);
 
 		for (const subscription of subscriptions) {
 			webpush.sendNotification(
@@ -24,8 +24,8 @@ export class PushNotifications {
 		}
 	}
 
-	public static async sendDownNotification(controller: Controller): Promise<void> {
-		const subscriptions = await Database.getPushFromCallsign(controller.callsign);
+	public static async sendDownNotification(controller: Controller, affectedCids: number[]): Promise<void> {
+		const subscriptions = await Database.getPushFromCallsign(controller.callsign, affectedCids);
 
 		for (const subscription of subscriptions) {
 			webpush.sendNotification(
@@ -39,18 +39,6 @@ export class PushNotifications {
 					vibrate: [100, 50, 100],
 				})
 			);
-		}
-	}
-
-	public static async sendOnlineNotifications(controllers: Controller[]): Promise<void> {
-		for (const controller of controllers) {
-			await this.sendOnlineNotification(controller);
-		}
-	}
-
-	public static async sendDownNotifications(controllers: Controller[]): Promise<void> {
-		for (const controller of controllers) {
-			await this.sendDownNotification(controller);
 		}
 	}
 }

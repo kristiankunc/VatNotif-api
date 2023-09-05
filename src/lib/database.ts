@@ -25,21 +25,22 @@ export class Database {
 		return rows;
 	}
 
-	public static async getWebhooksFromCallsign(callsign: string): Promise<string[]> {
-		let sql = "SELECT cid FROM watched_callsigns WHERE callsign = ?";
-		let values = [callsign];
+	public static async getAffectedCids(callsign: string): Promise<number[]> {
+		const sql = "SELECT cid from watched_callsigns WHERE ? LIKE callsign";
+		const values = [callsign];
 
-		let rows = await this.query(sql, values);
+		const rows = await this.query(sql, values);
 
-		const affectedCids = rows.map((row: { cid: string }) => row.cid);
-
+		return rows.map((row: { cid: number }) => row.cid);
+	}
+	public static async getWebhooksFromCallsign(callsign: string, affectedCids: number[]): Promise<string[]> {
 		let webhookUrls: string[] = [];
 
 		for (const cid of affectedCids) {
-			sql = "SELECT webhook_url FROM discord_notifications WHERE cid = ?";
-			values = [cid];
+			const sql = "SELECT webhook_url FROM discord_notifications WHERE cid = ?";
+			const values = [cid];
 
-			rows = await this.query(sql, values);
+			const rows = await this.query(sql, values);
 
 			webhookUrls = webhookUrls.concat(rows.map((row: { webhook_url: string }) => row.webhook_url));
 		}
@@ -65,14 +66,7 @@ export class Database {
 		await this.query(sql, values);
 	}
 
-	public static async getPushFromCallsign(callsign: string): Promise<PushNotificationSubscription[]> {
-		const sql = "SELECT cid FROM watched_callsigns WHERE callsign = ?";
-		const values = [callsign];
-
-		const rows = await this.query(sql, values);
-
-		const affectedCids = rows.map((row: { cid: string }) => row.cid);
-
+	public static async getPushFromCallsign(callsign: string, affectedCids: number[]): Promise<PushNotificationSubscription[]> {
 		let pushSubscriptions: PushNotificationSubscription[] = [];
 
 		for (const cid of affectedCids) {

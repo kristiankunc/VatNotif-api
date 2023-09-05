@@ -24,15 +24,19 @@ export class Vatsim {
 
 			for (const newController of this.newControllers) {
 				if (!ignoredCids.includes(newController.cid)) {
-					await DiscordNotifications.sendOnlineNotification(newController);
-					await PushNotifications.sendOnlineNotification(newController);
+					const affectedCids = await Database.getAffectedCids(newController.callsign);
+
+					await DiscordNotifications.sendOnlineNotification(newController, affectedCids);
+					await PushNotifications.sendOnlineNotification(newController, affectedCids);
 				}
 			}
 
 			for (const downController of this.downControllers) {
 				if (!ignoredCids.includes(downController.cid)) {
-					await DiscordNotifications.sendDownNotification(downController);
-					await PushNotifications.sendDownNotification(downController);
+					const affectedCids = await Database.getAffectedCids(downController.callsign);
+
+					await DiscordNotifications.sendDownNotification(downController, affectedCids);
+					await PushNotifications.sendDownNotification(downController, affectedCids);
 				}
 			}
 

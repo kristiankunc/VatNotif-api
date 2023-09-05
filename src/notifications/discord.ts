@@ -2,8 +2,8 @@ import { Database } from "../lib/database.js";
 import { Controller } from "../types/controllers.js";
 
 export class DiscordNotifications {
-	public static async sendOnlineNotification(controller: Controller): Promise<void> {
-		const webhooks = await Database.getWebhooksFromCallsign(controller.callsign);
+	public static async sendOnlineNotification(controller: Controller, affectedCids: number[]): Promise<void> {
+		const webhooks = await Database.getWebhooksFromCallsign(controller.callsign, affectedCids);
 
 		for (const webhook of webhooks) {
 			await fetch(webhook, {
@@ -29,8 +29,8 @@ export class DiscordNotifications {
 		}
 	}
 
-	public static async sendDownNotification(controller: Controller): Promise<void> {
-		const webhooks = await Database.getWebhooksFromCallsign(controller.callsign);
+	public static async sendDownNotification(controller: Controller, affectedCids: number[]): Promise<void> {
+		const webhooks = await Database.getWebhooksFromCallsign(controller.callsign, affectedCids);
 
 		for (const webhook of webhooks) {
 			await fetch(webhook, {
@@ -53,18 +53,6 @@ export class DiscordNotifications {
 					attachments: [],
 				}),
 			});
-		}
-	}
-
-	public static async sendOnlineNotifications(controllers: Controller[]): Promise<void> {
-		for (const controller of controllers) {
-			await this.sendOnlineNotification(controller);
-		}
-	}
-
-	public static async sendDownNotifications(controllers: Controller[]): Promise<void> {
-		for (const controller of controllers) {
-			await this.sendDownNotification(controller);
 		}
 	}
 }
