@@ -2,6 +2,9 @@ import { Database } from "../lib/database.js";
 import { Controller } from "../types/controllers.js";
 
 export class DiscordNotifications {
+	private static code(text: string) {
+		return `\`${text}\``;
+	}
 	public static async sendOnlineNotification(controller: Controller, affectedCids: number[]): Promise<void> {
 		const webhooks = await Database.getWebhooksFromCallsign(controller.callsign, affectedCids);
 
@@ -16,7 +19,9 @@ export class DiscordNotifications {
 					embeds: [
 						{
 							title: "New VatNotif notification!",
-							description: `🆙 Controller **${controller.name}** (${controller.cid}) has logged on as **${controller.callsign}**!`,
+							description: `🆙 Controller **${controller.name}** (${controller.cid}) has logged on as **${
+								controller.callsign
+							}** - ${this.code(controller.frequency)}!`,
 							color: 3319890,
 							timestamp: new Date().toISOString(),
 						},
