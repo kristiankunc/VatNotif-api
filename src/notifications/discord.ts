@@ -19,9 +19,9 @@ export class DiscordNotifications {
 					embeds: [
 						{
 							title: "New VatNotif notification!",
-							description: `🆙 Controller **${controller.name}** (${controller.cid}) has logged on as **${
-								controller.callsign
-							}** - ${this.code(controller.frequency)}!`,
+							description: `🆙 Controller **${controller.name}** (${controller.cid}) has logged on as **${controller.callsign}**${
+								controller.frequency === "199.998" ? ` - ` + this.code(controller.frequency) : ""
+							}`!,
 							color: 3319890,
 							timestamp: new Date().toISOString(),
 						},

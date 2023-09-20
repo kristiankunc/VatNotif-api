@@ -14,7 +14,9 @@ export class PushNotifications {
 				subscription,
 				JSON.stringify({
 					title: "New VatNotif notification!",
-					body: `🆙 Controller ${controller.name} (${controller.cid}) has logged on as ${controller.callsign} - ${controller.frequency}!`,
+					body: `🆙 Controller ${controller.name} (${controller.cid}) has logged on as ${controller.callsign}${
+						controller.frequency === "199.998" ? ` - ` + controller.frequency : ""
+					}!`,
 					icon: "https://vatnotif.kristn.co.uk/brand/logo.png",
 					badge: "https://vatnotif.kristn.co.uk/brand/logo.png",
 					image: "https://vatnotif.kristn.co.uk/brand/logo.png",
