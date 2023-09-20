@@ -20,7 +20,7 @@ export class DiscordNotifications {
 						{
 							title: "New VatNotif notification!",
 							description: `🆙 Controller **${controller.name}** (${controller.cid}) has logged on as **${controller.callsign}**${
-								controller.frequency === "199.998" ? ` - ` + this.code(controller.frequency) : ""
+								controller.frequency !== "199.998" ? ` - ` + this.code(controller.frequency) : ""
 							}`!,
 							color: 3319890,
 							timestamp: new Date().toISOString(),
