@@ -12,7 +12,7 @@
 	"author": "",
 	"license": "ISC",
 	"devDependencies": {
-		"@types/express": "^4.17.19",
+		"@types/express": "^4.17.20",
 		"@types/node": "^20.8.7",
 		"@types/web-push": "^3.6.2",
 		"install": "^0.13.0",
