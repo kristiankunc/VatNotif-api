@@ -68,16 +68,16 @@ paths:
                                 type: string
     /push/subscribe:
         post:
-        summary: Subscribe to push notifications
-        requestBody:
-            required: true
-            content:
-            application/json:
-                schema:
-                $ref: "#/components/schemas/PushNotificationSubscription"
-        responses:
-            "201":
-            description: Created
+            summary: Subscribe to push notifications
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                        $ref: "#/components/schemas/PushNotificationSubscription"
+            responses:
+                "201":
+                    description: Created
 components:
     schemas:
         PushNotificationSubscription:
