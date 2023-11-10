@@ -3,6 +3,8 @@ The api server used to track online controllers for the vatNotif service (https:
 
 This api is **free** to use by anyone without any API key required.
 
+Documentation for this api can be found at https://vatnotif.kristn.co.uk/docs
+
 ## Development setup
 ### MySQL
 

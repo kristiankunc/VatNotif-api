@@ -3,6 +3,8 @@ import { Vatsim } from "./vatsim.js";
 import { VAPIDKeys } from "./conf/push.js";
 import webpush from "web-push";
 import { Database } from "./lib/database.js";
+import swaggerUi from "swagger-ui-express";
+import YAML from "yamljs";
 
 const app = express();
 app.use((req, res, next) => {
@@ -11,6 +13,8 @@ app.use((req, res, next) => {
 	next();
 });
 app.use(express.json());
+const swaggerDocument = YAML.load("./swagger.yaml");
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 webpush.setVapidDetails("mailto: kristian@kristn.co.uk", VAPIDKeys.publicKey, VAPIDKeys.privateKey);
 
@@ -35,6 +39,7 @@ app.get("/controllers/down", async (req, res) => {
 });
 
 app.get("/push/public-key", async (req, res) => {
+	res.setHeader("content-type", "text/plain");
 	res.send(VAPIDKeys.publicKey);
 });
 

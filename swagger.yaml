@@ -1,0 +1,132 @@
+openapi: 3.0.0
+info:
+    title: VatNotif API
+    description: API specification for VatNotif. Provides info about active controllers on the VATSIM network.
+    version: 0.1.0
+servers:
+    - url: https://api.vatnotif.kristn.co.uk/
+      description: Main production server
+paths:
+    /:
+        get:
+            summary: Get the root endpoint
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    message:
+                                        type: string
+    /controllers/online:
+        get:
+            summary: Get online controllers
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: "#/components/schemas/Controller"
+    /controllers/new:
+        get:
+            summary: Get new controllers from the latest update cycle (last 15-30 seconds)
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: "#/components/schemas/Controller"
+    /controllers/down:
+        get:
+            summary: Get controllers that got offline in the latest update cycle (last 15-30 seconds)
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: "#/components/schemas/Controller"
+    /push/public-key:
+        get:
+            summary: Get the public key for push notifications
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+    /push/subscribe:
+        post:
+        summary: Subscribe to push notifications
+        requestBody:
+            required: true
+            content:
+            application/json:
+                schema:
+                $ref: "#/components/schemas/PushNotificationSubscription"
+        responses:
+            "201":
+            description: Created
+components:
+    schemas:
+        PushNotificationSubscription:
+            type: object
+            properties:
+                endpoint:
+                    type: string
+                expirationTime:
+                    type: integer
+                    nullable: true
+                keys:
+                    type: object
+                    properties:
+                        p256dh:
+                            type: string
+                        auth:
+                            type: string
+
+        Controller:
+            type: object
+            properties:
+                cid:
+                    type: integer
+                    format: int64
+                name:
+                    type: string
+                callsign:
+                    type: string
+                frequency:
+                    type: string
+                facility:
+                    type: integer
+                    format: int64
+                rating:
+                    type: integer
+                    format: int64
+                server:
+                    type: string
+                visualRange:
+                    type: integer
+                    format: int64
+                textAtis:
+                    type: array
+                    items:
+                        type: string
+                    nullable: true
+                lastUpdated:
+                    type: string
+                    format: date-time
+                logonTime:
+                    type: string
+                    format: date-time
