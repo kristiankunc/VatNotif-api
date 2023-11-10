@@ -4,6 +4,7 @@ import { PushNotifications } from "./notifications/push.js";
 import { Controller } from "./types/controllers.js";
 export class Vatsim {
 	private initialized = false;
+	public lastModified = new Date();
 
 	private onlineControllers: Controller[] = [];
 	private newControllers: Controller[] = [];
@@ -18,6 +19,8 @@ export class Vatsim {
 
 		setInterval(async () => {
 			const onlineControllers = await this.fetchControllers();
+			this.lastModified = new Date();
+
 			const ignoredCids = await Database.getIgnoredCids();
 			this.newControllers = await this.filterNewControllers(onlineControllers);
 			this.downControllers = await this.filterDownControllers(onlineControllers);
