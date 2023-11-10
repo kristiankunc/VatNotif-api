@@ -1,5 +1,5 @@
 # VatNotif-api
-The api server used to track online controllers for the vatNotif service (https://vatnotif.kristn.co.uk/)
+The api server used to track online controllers for the VatNotif service (https://vatnotif.kristn.co.uk/)
 
 This api is **free** to use by anyone without any API key required.
 
