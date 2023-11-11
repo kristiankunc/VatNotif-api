@@ -1,0 +1,3 @@
+[submodule "vatglasses-data"]
+	path = vatglasses-data
+	url = https://github.com/lennycolton/vatglasses-data.git
