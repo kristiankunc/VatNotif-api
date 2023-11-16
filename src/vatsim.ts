@@ -16,7 +16,7 @@ export class Vatsim {
 		}
 
 		this.onlineControllers = await this.fetchControllers();
-
+		return;
 		setInterval(async () => {
 			const onlineControllers = await this.fetchControllers();
 			this.lastModified = new Date();
@@ -109,3 +109,5 @@ export class Vatsim {
 		return this.downControllers;
 	}
 }
+
+export const vatsim = new Vatsim();

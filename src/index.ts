@@ -1,10 +1,11 @@
 import express from "express";
-import { Vatsim } from "./vatsim.js";
+import { vatsim } from "./vatsim.js";
 import { VAPIDKeys } from "./conf/push.js";
 import webpush from "web-push";
 import { Database } from "./lib/database.js";
 import swaggerUi from "swagger-ui-express";
 import YAML from "yamljs";
+import { airspaceData } from "./data.js";
 
 const app = express();
 app.use((req, res, next) => {
@@ -19,7 +20,6 @@ app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 webpush.setVapidDetails("mailto: kristian@kristn.co.uk", VAPIDKeys.publicKey, VAPIDKeys.privateKey);
 
-const vatsim = new Vatsim();
 await vatsim.initialize();
 await vatsim.forceRefresh();
 
@@ -69,6 +69,37 @@ app.post("/push/subscribe", async (req, res) => {
 	);
 
 	res.sendStatus(201);
+});
+
+app.get("/topdown/icao/:icao", async (req, res) => {
+	const icao = req.params.icao.toUpperCase();
+
+	if (!icao || icao.length !== 4) {
+		res.status(400).send("Invalid ICAO");
+		return;
+	}
+
+	const topdown = airspaceData.getAerodromeTopdown(icao);
+
+	if (!topdown) {
+		res.status(404).send("ICAO not found");
+		return;
+	}
+
+	res.json(topdown);
+});
+
+app.get("/topdown/position/:callsign", async (req, res) => {
+	const callsign = req.params.callsign;
+
+	const topdown = airspaceData.getCallsignTopdown(callsign);
+
+	if (!topdown) {
+		res.status(404).send("Callsign not found");
+		return;
+	}
+
+	res.json(topdown);
 });
 
 app.listen(8000, () => {
