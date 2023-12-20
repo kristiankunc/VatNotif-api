@@ -24,7 +24,8 @@ await vatsim.initialize();
 await vatsim.forceRefresh();
 
 app.get("/", (req, res) => {
-	res.json({ message: "VatNotif API" });
+	res.setHeader("content-type", "text/plain");
+	res.send("VatNotif API, docs @ https://api.vatnotif.kristn.co.uk/docs");
 });
 
 app.get("/controllers/online", async (req, res) => {
