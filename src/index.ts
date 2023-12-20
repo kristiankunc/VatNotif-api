@@ -79,34 +79,18 @@ app.post("/push/subscribe", async (req, res) => {
 });
 
 app.get("/topdown/icao/:icao", async (req, res) => {
+	if (!req.params.icao) return res.status(400).send("No ICAO provided");
+
 	const icao = req.params.icao.toUpperCase();
 
-	if (!icao || icao.length !== 4) {
-		res.status(400).send("Invalid ICAO");
-		return;
-	}
-
 	const topdown = airspaceData.getAerodromeTopdown(icao);
+	if (topdown.size === 0) return res.status(404).send("ICAO not found");
 
-	if (!topdown) {
-		res.status(404).send("ICAO not found");
-		return;
-	}
-
-	res.json(topdown);
+	res.json(Object.fromEntries(topdown));
 });
 
-app.get("/topdown/position/:callsign", async (req, res) => {
-	const callsign = req.params.callsign;
-
-	const topdown = airspaceData.getCallsignTopdown(callsign);
-
-	if (!topdown) {
-		res.status(404).send("Callsign not found");
-		return;
-	}
-
-	res.json(topdown);
+app.get("/topdown/data-position/:position", async (req, res) => {
+	return null;
 });
 
 app.listen(8000, () => {

@@ -5,6 +5,10 @@ export class AirspaceData {
 	public positions: Position[] = [];
 	public airports: Airport[] = [];
 
+	public airportsMap: Map<string, Airport> = new Map();
+	public positionsMap: Map<string, Position> = new Map();
+
+	public airportFiles: Map<string, string> = new Map();
 	private static defaultTopdown = {
 		base: ["DEL", "GND", "TWR"],
 		extended: ["F_APP", "APP"],
@@ -47,49 +51,34 @@ export class AirspaceData {
 						: (AirspaceData.defaultTopdown.base.concat(AirspaceData.defaultTopdown.extended) as string[]),
 					extendedTopdown: airport.topdown || [],
 				} as Airport);
+
+				this.airportFiles.set(airport.icao, fileId);
+			}
+
+			for (const position of this.positions) {
+				this.positionsMap.set(`${fileId}_${position.id}`, position);
+			}
+
+			for (const airport of this.airports) {
+				this.airportsMap.set(`${fileId}_${airport.icao}`, airport);
 			}
 		}
 	}
 
-	public getAerodromeTopdown(icao: string): Position[] {
-		const airport = this.airports.find((airport) => airport.icao === icao);
-		console.log(airport);
-		if (!airport) {
-			return [];
+	public getAerodromeTopdown(icao: string): Map<string, Position> {
+		const res = new Map();
+
+		const airportFileId = this.airportFiles.get(icao);
+		if (!airportFileId) return res;
+
+		const airport = this.airportsMap.get(`${airportFileId}_${icao}`);
+		if (!airport) return res;
+
+		for (const position of airport.baseTopdown) {
+			res.set(`${icao}_${position}`, null);
 		}
-
-		// return only extendedtopdown
-		return airport.extendedTopdown.map((position) => this.positions.find((pos) => pos.id === position && airport.file === pos.file) as Position);
-	}
-
-	public getCallsignTopdown(callsign: string): { icao: string[][]; data: string[] } | null {
-		const splits = callsign.split("_");
-		const dataCallsign = this.positions.find((position) => position.prefix.includes(splits[0]) && position.type === splits[splits.length - 1]);
-
-		if (!dataCallsign) {
-			return null;
-		}
-
-		const airports = this.airports.filter((airport) => airport.file === dataCallsign.file && airport.extendedTopdown.includes(dataCallsign.id));
-
-		const res: { icao: string[][]; data: string[] } = {
-			icao: [],
-			data: [],
-		};
-		for (const airport of airports) {
-			const aiportIcao: string[] = [];
-			airport.baseTopdown.map((position) => `${airport.icao}_${position}`).forEach((position) => aiportIcao.push(position));
-			res.icao.push(aiportIcao);
-
-			// get valid logon callsigns from the airporrt.extendedTopdown callsigns, get only ones BELOW the current callsign nad no duplicates
-			airport.extendedTopdown.map((position) => this.positions.find((pos) => pos.id === position && airport.file === pos.file) as Position);
-			const validLogons = airport.extendedTopdown
-				.map((position) => this.positions.find((pos) => pos.id === position && airport.file === pos.file) as Position)
-				.filter((position) => position.logons.indexOf(dataCallsign.id) < position.logons.indexOf(dataCallsign.id))
-				.filter((position, index, self) => self.indexOf(position) === index);
-			validLogons.forEach((position) => res.data.push(position.id));
-
-			res.icao.push(aiportIcao);
+		for (const position of airport.extendedTopdown) {
+			res.set(position, this.positionsMap.get(`${airportFileId}_${position}`));
 		}
 
 		return res;
