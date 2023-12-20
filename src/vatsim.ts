@@ -10,7 +10,7 @@ export class Vatsim {
 	private newControllers: Controller[] = [];
 	private downControllers: Controller[] = [];
 
-	public async initialize(): Promise<void> {
+	public async initialize(dev: boolean = false): Promise<void> {
 		if (this.initialized) {
 			return;
 		}
@@ -23,6 +23,9 @@ export class Vatsim {
 			const ignoredCids = await Database.getIgnoredCids();
 			this.newControllers = await this.filterNewControllers(onlineControllers);
 			this.downControllers = await this.filterDownControllers(onlineControllers);
+			this.onlineControllers = onlineControllers;
+
+			if (dev) return;
 
 			for (const newController of this.newControllers) {
 				if (!ignoredCids.includes(newController.cid)) {
@@ -41,8 +44,6 @@ export class Vatsim {
 					await PushNotifications.sendDownNotification(downController, affectedCids);
 				}
 			}
-
-			this.onlineControllers = onlineControllers;
 		}, 15 * 1000);
 
 		this.initialized = true;

@@ -20,6 +20,12 @@ app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 webpush.setVapidDetails("mailto: kristian@kristn.co.uk", VAPIDKeys.publicKey, VAPIDKeys.privateKey);
 
+// get the first system argument
+let isDev = process.argv.length > 2 && process.argv[2] === "dev";
+if (isDev) {
+	console.log("Running in dev mode");
+}
+
 await vatsim.initialize();
 await vatsim.forceRefresh();
 
