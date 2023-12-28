@@ -86,23 +86,11 @@ app.get("/topdown/icao/:icao", async (req, res) => {
 	const topdown = airspaceData.getAerodromeTopdown(icao);
 	if (topdown.size === 0) return res.status(404).send("ICAO not found");
 
-	const frequencies = airspaceData.getAerodromeFrequencies(icao);
-
-	res = res.json({
-		topdown: Object.fromEntries(topdown),
-		frequencies: Object.fromEntries(frequencies),
-	});
+	res.json(Object.fromEntries(topdown));
 });
 
-app.get("/position/:position", async (req, res) => {
-	if (!req.params.position) return res.status(400).send("No position provided");
-
-	const position = req.params.position.toUpperCase();
-
-	const data = airspaceData.getData(position);
-	if (data.length === 0) return res.status(404).send("Position not found");
-
-	res.json(data);
+app.get("/topdown/data-position/:position", async (req, res) => {
+	return null;
 });
 
 app.listen(8000, () => {

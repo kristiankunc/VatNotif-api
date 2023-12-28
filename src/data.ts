@@ -5,9 +5,10 @@ export class AirspaceData {
 	public positions: Position[] = [];
 	public airports: Airport[] = [];
 
-	public airportsMap: Map<string, Map<string, Airport>> = new Map(); // file<icao<airport>>
-	public positionsMap: Map<string, Map<string, Position>> = new Map(); // file<id<position>>
+	public airportsMap: Map<string, Airport> = new Map();
+	public positionsMap: Map<string, Position> = new Map();
 
+	public airportFiles: Map<string, string> = new Map();
 	private static defaultTopdown = {
 		base: ["DEL", "GND", "TWR"],
 		extended: ["F_APP", "APP"],
@@ -22,16 +23,12 @@ export class AirspaceData {
 				return { id, ...(value as any) };
 			});
 
-			this.airportsMap.set(fileId, new Map());
-			this.positionsMap.set(fileId, new Map());
-
 			for (const position of positionsArr) {
 				const validLogons = [];
 				for (const prefix of position.pre) {
 					validLogons.push(`${prefix}_${position.type}`);
 				}
-
-				this.positionsMap.get(fileId)?.set(position.id, {
+				this.positions.push({
 					id: position.id,
 					file: fileId,
 					frequency: position.frequency,
@@ -46,7 +43,7 @@ export class AirspaceData {
 			});
 
 			for (const airport of airportsArr) {
-				this.airportsMap.get(fileId)?.set(airport.icao, {
+				this.airports.push({
 					icao: airport.icao,
 					file: fileId,
 					baseTopdown: (airport.default ? airport.default : true)
@@ -54,6 +51,16 @@ export class AirspaceData {
 						: (AirspaceData.defaultTopdown.base.concat(AirspaceData.defaultTopdown.extended) as string[]),
 					extendedTopdown: airport.topdown || [],
 				} as Airport);
+
+				this.airportFiles.set(airport.icao, fileId);
+			}
+
+			for (const position of this.positions) {
+				this.positionsMap.set(`${fileId}_${position.id}`, position);
+			}
+
+			for (const airport of this.airports) {
+				this.airportsMap.set(`${fileId}_${airport.icao}`, airport);
 			}
 		}
 	}
@@ -61,52 +68,19 @@ export class AirspaceData {
 	public getAerodromeTopdown(icao: string): Map<string, Position> {
 		const res = new Map();
 
-		for (const [file, airports] of this.airportsMap) {
-			if (airports.has(icao)) {
-				const airport = airports.get(icao);
-				for (const pos of airport?.baseTopdown || []) {
-					res.set(pos, {
-						id: `${icao}_${pos}`,
-						file,
-						frequency: "199.998",
-						logons: [`${icao}_${pos}`],
-						prefix: [icao],
-						type: pos,
-					} as Position);
-				}
-				for (const pos of airport?.extendedTopdown || []) {
-					if (this.positionsMap.get(file)?.has(pos)) {
-						res.set(pos, this.positionsMap.get(file)?.get(pos) as Position);
-					}
-				}
-			}
-		}
-		return res;
-	}
+		const airportFileId = this.airportFiles.get(icao);
+		if (!airportFileId) return res;
 
-	public getAerodromeFrequencies(icao: string): Map<string, string> {
-		const res = new Map();
-		// return the frequency of all positions in its topdown above TWR
-		for (const [file, airports] of this.airportsMap) {
-			if (airports.has(icao)) {
-				const airport = airports.get(icao);
-				for (const pos of airport?.extendedTopdown || []) {
-					if (this.positionsMap.get(file)?.has(pos)) {
-						res.set(pos, this.positionsMap.get(file)?.get(pos)?.frequency as string);
-					}
-				}
-			}
-		}
-		return res;
-	}
+		const airport = this.airportsMap.get(`${airportFileId}_${icao}`);
+		if (!airport) return res;
 
-	public getData(position: string): Position[] {
-		const res = [];
-		for (const [file, positions] of this.positionsMap) {
-			for (const [id, pos] of positions) {
-				if (pos.logons.includes(position)) res.push(pos);
-			}
+		for (const position of airport.baseTopdown) {
+			res.set(`${icao}_${position}`, null);
 		}
+		for (const position of airport.extendedTopdown) {
+			res.set(position, this.positionsMap.get(`${airportFileId}_${position}`));
+		}
+
 		return res;
 	}
 }
