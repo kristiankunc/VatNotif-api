@@ -19,7 +19,7 @@
 		"@types/yamljs": "^0.2.34",
 		"install": "^0.13.0",
 		"nodemon": "^3.0.2",
-		"npm": "^10.2.4",
+		"npm": "^10.2.5",
 		"typescript": "^5.3.3"
 	},
 	"dependencies": {
