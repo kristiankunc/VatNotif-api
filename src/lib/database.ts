@@ -1,6 +1,7 @@
 import { createConnection, Connection } from "mysql2/promise";
 import { mysqlConfig } from "../conf/mysql.js";
 import { PushNotificationSubscription } from "../types/push-notification.js";
+import { ukData } from "../uk-data.js";
 
 export class Database {
 	private static async connect(): Promise<Connection> {
@@ -26,13 +27,39 @@ export class Database {
 	}
 
 	public static async getAffectedCids(callsign: string): Promise<number[]> {
-		const sql = "SELECT cid from watched_callsigns WHERE ? LIKE callsign";
+		const controllersBelow = ukData.controllerCallsignTopdown.get(callsign) || [];
+
+		let sql = "SELECT cid, callsign, topdown from watched_callsigns WHERE ? LIKE callsign";
 		const values = [callsign];
+
+		for (const controller of controllersBelow) {
+			sql += " OR ? LIKE callsign";
+			values.push(controller.callsign);
+		}
+		sql += ";";
 
 		const rows = await this.query(sql, values);
 
-		return rows.map((row: { cid: number }) => row.cid);
+		const affectedData = rows.map((row: { cid: number; callsign: string; topdown: number }) => {
+			return {
+				cid: row.cid,
+				callsign: row.callsign,
+				topdown: row.topdown === 1,
+			};
+		});
+
+		const res: number[] = [];
+		for (const row of affectedData) {
+			if (row.callsign == callsign) {
+				res.push(row.cid);
+			} else if (row.topdown) {
+				res.push(row.cid);
+			}
+		}
+		// avoid duplicates
+		return [...new Set(res)];
 	}
+
 	public static async getWebhooksFromCallsign(callsign: string, affectedCids: number[]): Promise<string[]> {
 		let webhookUrls: string[] = [];
 

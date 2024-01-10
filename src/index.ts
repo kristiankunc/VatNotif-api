@@ -1,11 +1,11 @@
 import express from "express";
-import { vatsim } from "./vatsim.js";
+import { Vatsim, vatsim } from "./vatsim.js";
 import { VAPIDKeys } from "./conf/push.js";
 import webpush from "web-push";
 import { Database } from "./lib/database.js";
 import swaggerUi from "swagger-ui-express";
 import YAML from "yamljs";
-import { airspaceData } from "./data.js";
+import { ukData } from "./uk-data.js";
 
 const app = express();
 app.use((req, res, next) => {
@@ -20,12 +20,12 @@ app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 webpush.setVapidDetails("mailto: kristian@kristn.co.uk", VAPIDKeys.publicKey, VAPIDKeys.privateKey);
 
-// get the first system argument
 let isDev = process.argv.length > 2 && process.argv[2] === "dev";
 if (isDev) {
 	console.log("Running in dev mode");
 }
 
+await ukData.fetchData();
 await vatsim.initialize();
 await vatsim.forceRefresh();
 
@@ -79,34 +79,26 @@ app.post("/push/subscribe", async (req, res) => {
 });
 
 app.get("/topdown/icao/:icao", async (req, res) => {
+	if (!req.params.icao) return res.status(400).send("No ICAO provided");
+
 	const icao = req.params.icao.toUpperCase();
+	if (!icao.startsWith("EG")) return res.status(400).send("Invalid ICAO, topdown only available for UK (EGTT, EGPX FIRs)");
 
-	if (!icao || icao.length !== 4) {
-		res.status(400).send("Invalid ICAO");
-		return;
-	}
+	const airfield = ukData.airfieldMap.get(icao);
+	if (!airfield) return res.status(404).send("No airfield found for ICAO");
 
-	const topdown = airspaceData.getAerodromeTopdown(icao);
-
-	if (!topdown) {
-		res.status(404).send("ICAO not found");
-		return;
-	}
-
-	res.json(topdown);
+	res.json(airfield.controllers);
 });
 
-app.get("/topdown/position/:callsign", async (req, res) => {
-	const callsign = req.params.callsign;
+app.get("/topdown/callsign/:callsign", async (req, res) => {
+	if (!req.params.callsign) return res.status(400).send("No callsign provided");
 
-	const topdown = airspaceData.getCallsignTopdown(callsign);
+	const callsign = vatsim.normaliseCallsign(req.params.callsign);
 
-	if (!topdown) {
-		res.status(404).send("Callsign not found");
-		return;
-	}
+	const controllers = ukData.controllerCallsignTopdown.get(callsign);
+	if (!controllers) return res.status(404).send("No controllers found for callsign");
 
-	res.json(topdown);
+	res.json(controllers);
 });
 
 app.listen(8000, () => {

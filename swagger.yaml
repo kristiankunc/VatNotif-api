@@ -74,10 +74,55 @@ paths:
                 content:
                     application/json:
                         schema:
-                        $ref: "#/components/schemas/PushNotificationSubscription"
+                            $ref: "#/components/schemas/PushNotificationSubscription"
             responses:
                 "201":
                     description: Created
+    /topdown/icao/{icao}:
+        get:
+            summary: Get the top-down controll for an airport (UK only)
+            parameters:
+                - name: icao
+                  in: path
+                  required: true
+                  description: ICAO code of the airport
+                  schema:
+                      type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/UkController"
+                "404":
+                    description: Not found
+
+                "400":
+                    description: Incorrect ICAO code
+
+    /topdown/callsign/{callsign}:
+        get:
+            summary: Get the top-down controll for a callsign (UK only)
+            parameters:
+                - name: callsign
+                  in: path
+                  required: true
+                  description: Callsign of the controller)
+                  schema:
+                      type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/UkController"
+                "404":
+                    description: Not found
+
+                "400":
+                    description: Incorrect callsign
 components:
     schemas:
         PushNotificationSubscription:
@@ -130,3 +175,14 @@ components:
                 logonTime:
                     type: string
                     format: date-time
+
+        UkController:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: int64
+                callsign:
+                    type: string
+                frequency:
+                    type: string
