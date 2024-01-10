@@ -94,7 +94,7 @@ export class Vatsim {
 		return downControllers;
 	}
 
-	private normaliseCallsign(callsign: string): string {
+	public normaliseCallsign(callsign: string): string {
 		return callsign.replace(/_+/g, "_").toUpperCase();
 	}
 

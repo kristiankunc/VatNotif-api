@@ -1,5 +1,5 @@
 import express from "express";
-import { vatsim } from "./vatsim.js";
+import { Vatsim, vatsim } from "./vatsim.js";
 import { VAPIDKeys } from "./conf/push.js";
 import webpush from "web-push";
 import { Database } from "./lib/database.js";
@@ -93,7 +93,7 @@ app.get("/topdown/icao/:icao", async (req, res) => {
 app.get("/topdown/callsign/:callsign", async (req, res) => {
 	if (!req.params.callsign) return res.status(400).send("No callsign provided");
 
-	const callsign = req.params.callsign.toUpperCase();
+	const callsign = vatsim.normaliseCallsign(req.params.callsign);
 
 	const controllers = ukData.controllerCallsignTopdown.get(callsign);
 	if (!controllers) return res.status(404).send("No controllers found for callsign");
