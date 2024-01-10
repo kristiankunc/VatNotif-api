@@ -29,7 +29,8 @@ export class Vatsim {
 
 			for (const newController of this.newControllers) {
 				if (!ignoredCids.includes(newController.cid)) {
-					const affectedCids = await Database.getAffectedCids(newController.callsign);
+					const normalisedCallsign = this.normaliseCallsign(newController.callsign);
+					const affectedCids = await Database.getAffectedCids(normalisedCallsign);
 
 					await DiscordNotifications.sendOnlineNotification(newController, affectedCids);
 					await PushNotifications.sendOnlineNotification(newController, affectedCids);
@@ -91,6 +92,10 @@ export class Vatsim {
 		}
 
 		return downControllers;
+	}
+
+	private normaliseCallsign(callsign: string): string {
+		return callsign.replace(/_+/g, "_").toUpperCase();
 	}
 
 	public async forceRefresh(): Promise<void> {

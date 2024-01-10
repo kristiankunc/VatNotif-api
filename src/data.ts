@@ -85,4 +85,4 @@ export class AirspaceData {
 	}
 }
 
-export const airspaceData = new AirspaceData();
+// export const airspaceData = new AirspaceData();
