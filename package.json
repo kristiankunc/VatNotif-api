@@ -18,7 +18,7 @@
 		"@types/web-push": "^3.6.3",
 		"@types/yamljs": "^0.2.34",
 		"install": "^0.13.0",
-		"nodemon": "^3.0.3",
+		"nodemon": "^3.1.0",
 		"npm": "^10.5.0",
 		"typescript": "^5.3.3"
 	},
