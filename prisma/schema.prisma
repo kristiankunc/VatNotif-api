@@ -1,0 +1,27 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "mysql"
+    url      = env("DATABASE_URL")
+}
+
+model watched_callsigns {
+    id       Int     @id @default(autoincrement())
+    cid      Int
+    callsign String  @db.VarChar(15)
+    topdown  Boolean @default(false)
+}
+
+model ignored_callsigns {
+    cid Int @id @unique
+}
+
+model discord_notifications {
+    id           Int    @id @default(autoincrement())
+    cid          Int
+    webhook_url  String @db.VarChar(255)
+    up_content   Json
+    down_content Json
+}
