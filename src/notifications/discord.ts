@@ -45,9 +45,7 @@ export class DiscordNotifications extends NotificationService {
 			headers: {
 				"Content-Type": "application/json",
 			},
-			body: JSON.stringify({
-				content: message.content,
-			}),
+			body: JSON.stringify(message.content),
 		});
 
 		if (!res.ok) {
