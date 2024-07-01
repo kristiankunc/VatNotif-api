@@ -24,7 +24,7 @@
 	},
 	"dependencies": {
 		"express": "^4.19.2",
-		"mysql2": "^3.10.0",
+		"mysql2": "^3.10.2",
 		"swagger-ui-express": "^5.0.1",
 		"web-push": "^3.6.7",
 		"yamljs": "^0.3.0"
