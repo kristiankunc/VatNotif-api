@@ -7,21 +7,28 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model watched_callsigns {
+model WatchedCallsign {
     id       Int     @id @default(autoincrement())
     cid      Int
     callsign String  @db.VarChar(15)
     topdown  Boolean @default(false)
 }
 
-model ignored_callsigns {
+model IgnoredCallsign {
     cid Int @id @unique
 }
 
-model discord_notifications {
-    id           Int    @id @default(autoincrement())
-    cid          Int
-    webhook_url  String @db.VarChar(255)
-    up_content   Json
-    down_content Json
+model DiscordEmbed {
+    id      Int     @id @default(autoincrement())
+    cid     Int
+    enabled Boolean @default(true)
+    event   String  @db.VarChar(4) // up | down
+    url     String  @db.VarChar(256)
+    author  String  @db.VarChar(80)
+    title   String  @db.VarChar(256)
+    text    String  @db.VarChar(4096)
+    color   String  @db.VarChar(7)
+    avatar  String  @db.VarChar(256)
+
+    @@unique([cid, event])
 }
