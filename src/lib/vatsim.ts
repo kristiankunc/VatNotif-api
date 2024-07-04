@@ -15,8 +15,6 @@ export class Vatsim {
 	public static upControllers: Controller[] = [];
 	public static downControllers: Controller[] = [];
 
-	public static noprimBuffer: (Controller & { addedAt: Date })[] = [];
-
 	private static async fetchControllers(): Promise<Controller[]> {
 		let controllers: Controller[] = [];
 
@@ -36,16 +34,12 @@ export class Vatsim {
 		for (const controller of data.controllers) {
 			const normalisedCallsign = normaliseCallsign(controller.callsign);
 
-			if (ignoredCids.includes(controller.cid) || !normalisedCallsign.includes("_")) continue;
-			if (controller.frequency === "199.998") {
-				this.noprimBuffer.push({
-					addedAt: new Date(),
-					cid: controller.cid,
-					name: controller.name,
-					callsign: controller.callsign,
-					frequency: controller.frequency,
-				});
-			}
+			if (
+				ignoredCids.includes(controller.cid) ||
+				!normalisedCallsign.includes("_") ||
+				(controller.frequency === "199.998" && !controller.callsign.includes("OBS"))
+			)
+				continue;
 
 			controllers.push({
 				cid: controller.cid,
@@ -56,23 +50,6 @@ export class Vatsim {
 		}
 
 		return controllers;
-	}
-
-	private static getNewControllersFromBuff(): Controller[] {
-		const newPrims: Controller[] = [];
-
-		this.noprimBuffer = this.noprimBuffer.filter((controller) => {
-			return Date.now() - controller.addedAt.getTime() < 60000;
-		});
-
-		for (const controller of this.noprimBuffer) {
-			const newFreq = this.lastFetchedControllers.find((c) => c.cid === controller.cid)?.frequency;
-			if (newFreq && newFreq !== "199.998") {
-				newPrims.push(controller);
-			}
-		}
-
-		return newPrims;
 	}
 
 	private static async filterUpControllers(currentControllers: Controller[]) {
@@ -96,7 +73,7 @@ export class Vatsim {
 			return;
 		}
 
-		const upControllers = (await this.filterUpControllers(currentControllers)).concat(this.getNewControllersFromBuff());
+		const upControllers = await this.filterUpControllers(currentControllers);
 		const downControllers = await this.filterDownControllers(currentControllers);
 
 		this.upControllers = upControllers;

@@ -34,7 +34,7 @@ app.get("/controllers/down", (req, res) => {
 });
 
 app.get("/controllers/online", (req, res) => {
-	res.json(Vatsim.lastFetchedControllers.filter((controller) => controller.frequency !== "199.998"));
+	res.json(Vatsim.lastFetchedControllers);
 });
 
 server.listen(3000, () => {
