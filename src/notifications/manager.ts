@@ -27,7 +27,7 @@ export class NotificaionManager {
 
 		const watchers = new Map<Controller, number[]>();
 
-		const watchingPairs = await prisma.watched_callsigns.findMany({
+		const watchingPairs = await prisma.watchedCallsign.findMany({
 			where: {
 				callsign: {
 					in: Array.from(controllerCace.keys()),

@@ -1,9 +1,19 @@
+import { DiscordEmbed } from "@prisma/client";
 import { prisma } from "../lib/prisma";
 import { ControllerNotification, NotificationService, NotificaionManager } from "./manager";
 
-interface DiscordMessage {
-	content: string;
-	url: string;
+interface JSONEmbed {
+	content: null;
+	embeds: [
+		{
+			title: string;
+			description: string;
+			color: number;
+		}
+	];
+	username: string;
+	avatar_url: string;
+	attachments: [];
 }
 export class DiscordNotifications extends NotificationService {
 	public static async sendNotifications(controllers: ControllerNotification[]): Promise<void> {
@@ -16,36 +26,41 @@ export class DiscordNotifications extends NotificationService {
 		}
 	}
 
-	private static async buildMessage(notification: ControllerNotification, watcher: number): Promise<DiscordMessage> {
-		const messageFormats = await prisma.discord_notifications.findFirst({
+	private static async buildMessage(notification: ControllerNotification, watcher: number): Promise<{ url: string; data: JSONEmbed } | null> {
+		const embed = await prisma.discordEmbed.findFirst({
 			where: {
 				cid: watcher,
-			},
-			select: {
-				down_content: true,
-				up_content: true,
-				webhook_url: true,
+				event: notification.status.type,
 			},
 		});
 
-		if (!messageFormats) return null as any;
-
-		let content =
-			notification.status.type === "down" ? messageFormats.down_content?.toString() || "" : messageFormats.up_content?.toString() || "";
+		if (!embed) return null;
 
 		return {
-			content: NotificaionManager.replaceVariables(content, notification.status.controller),
-			url: messageFormats.webhook_url,
+			url: embed.url,
+			data: {
+				content: null,
+				embeds: [
+					{
+						title: embed.title,
+						description: NotificaionManager.replaceVariables(embed.text, notification.status.controller),
+						color: parseInt(embed.color.slice(1), 16),
+					},
+				],
+				username: embed.author,
+				avatar_url: embed.avatar,
+				attachments: [],
+			},
 		};
 	}
 
-	private static async sendDiscordMessage(message: DiscordMessage, cid: number): Promise<void> {
+	private static async sendDiscordMessage(message: { url: string; data: JSONEmbed }, cid: number): Promise<void> {
 		const res = await fetch(message.url, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
 			},
-			body: JSON.stringify(message.content),
+			body: JSON.stringify(message.data),
 		});
 
 		if (!res.ok) {

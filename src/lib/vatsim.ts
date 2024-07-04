@@ -15,6 +15,8 @@ export class Vatsim {
 	public static upControllers: Controller[] = [];
 	public static downControllers: Controller[] = [];
 
+	public static noprimBuffer: (Controller & { addedAt: Date })[] = [];
+
 	private static async fetchControllers(): Promise<Controller[]> {
 		let controllers: Controller[] = [];
 
@@ -25,25 +27,52 @@ export class Vatsim {
 
 		if (data.general.update < this.lastFetched) return this.lastFetchedControllers;
 
-		const ignoredCids = await prisma.ignored_callsigns.findMany({
+		const ignoredCids = await prisma.ignoredCallsign.findMany({
 			select: {
 				cid: true,
 			},
 		});
 
 		for (const controller of data.controllers) {
-			if (controller.frequency === "199.998") continue;
+			const normalisedCallsign = normaliseCallsign(controller.callsign);
+
 			if (ignoredCids.includes(controller.cid)) continue;
+			if (controller.frequency === "199.998" && normalisedCallsign.includes("_")) {
+				this.noprimBuffer.push({
+					addedAt: new Date(),
+					cid: controller.cid,
+					name: controller.name,
+					callsign: controller.callsign,
+					frequency: controller.frequency,
+				});
+			}
 
 			controllers.push({
 				cid: controller.cid,
 				name: controller.name,
-				callsign: normaliseCallsign(controller.callsign),
+				callsign: controller.callsign,
 				frequency: controller.frequency,
 			});
 		}
 
 		return controllers;
+	}
+
+	private static getNewControllersFromBuff(): Controller[] {
+		const newPrims: Controller[] = [];
+
+		this.noprimBuffer = this.noprimBuffer.filter((controller) => {
+			return Date.now() - controller.addedAt.getTime() < 60000;
+		});
+
+		for (const controller of this.noprimBuffer) {
+			const newFreq = this.lastFetchedControllers.find((c) => c.cid === controller.cid)?.frequency;
+			if (newFreq && newFreq !== "199.998") {
+				newPrims.push(controller);
+			}
+		}
+
+		return newPrims;
 	}
 
 	private static async filterUpControllers(currentControllers: Controller[]) {
@@ -67,11 +96,13 @@ export class Vatsim {
 			return;
 		}
 
-		const upControllers = await this.filterUpControllers(currentControllers);
+		const upControllers = (await this.filterUpControllers(currentControllers)).concat(this.getNewControllersFromBuff());
 		const downControllers = await this.filterDownControllers(currentControllers);
 
 		this.upControllers = upControllers;
 		this.downControllers = downControllers;
 		this.lastFetchedControllers = currentControllers;
+
+		console.log(upControllers);
 	}
 }
