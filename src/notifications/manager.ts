@@ -29,9 +29,11 @@ export class NotificaionManager {
 
 		const watchingPairs = await prisma.watchedCallsign.findMany({
 			where: {
-				callsign: {
-					in: Array.from(controllerCace.keys()),
-				},
+				OR: Array.from(controllerCace.keys()).map((callsign) => ({
+					callsign: {
+						contains: callsign,
+					},
+				})),
 			},
 			select: {
 				callsign: true,
