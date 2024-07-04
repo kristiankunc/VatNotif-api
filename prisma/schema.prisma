@@ -14,7 +14,7 @@ model WatchedCallsign {
     topdown  Boolean @default(false)
 }
 
-model IgnoredCallsign {
+model IgnoredCid {
     cid Int @id @unique
 }
 

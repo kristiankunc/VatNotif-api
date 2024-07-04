@@ -27,7 +27,7 @@ export class Vatsim {
 
 		if (data.general.update < this.lastFetched) return this.lastFetchedControllers;
 
-		const ignoredCids = await prisma.ignoredCallsign.findMany({
+		const ignoredCids = await prisma.ignoredCid.findMany({
 			select: {
 				cid: true,
 			},
@@ -36,8 +36,8 @@ export class Vatsim {
 		for (const controller of data.controllers) {
 			const normalisedCallsign = normaliseCallsign(controller.callsign);
 
-			if (ignoredCids.includes(controller.cid)) continue;
-			if (controller.frequency === "199.998" && normalisedCallsign.includes("_")) {
+			if (ignoredCids.includes(controller.cid) || !normalisedCallsign.includes("_")) continue;
+			if (controller.frequency === "199.998") {
 				this.noprimBuffer.push({
 					addedAt: new Date(),
 					cid: controller.cid,
@@ -102,7 +102,5 @@ export class Vatsim {
 		this.upControllers = upControllers;
 		this.downControllers = downControllers;
 		this.lastFetchedControllers = currentControllers;
-
-		console.log(upControllers);
 	}
 }
