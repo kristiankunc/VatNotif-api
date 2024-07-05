@@ -31,6 +31,7 @@ export class DiscordNotifications extends NotificationService {
 			where: {
 				cid: watcher,
 				event: notification.status.type,
+				enabled: true,
 			},
 		});
 
