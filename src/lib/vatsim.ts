@@ -1,3 +1,4 @@
+import { ControllerStatus, NotificaionManager } from "../notifications/manager";
 import { normaliseCallsign } from "./callsign";
 import { prisma } from "./prisma";
 
@@ -75,6 +76,12 @@ export class Vatsim {
 
 		const upControllers = await this.filterUpControllers(currentControllers);
 		const downControllers = await this.filterDownControllers(currentControllers);
+
+		NotificaionManager.sendNotifications(
+			upControllers
+				.map((controller) => ({ controller, type: "up" }))
+				.concat(downControllers.map((controller) => ({ controller, type: "down" }))) as ControllerStatus[]
+		);
 
 		this.upControllers = upControllers;
 		this.downControllers = downControllers;
