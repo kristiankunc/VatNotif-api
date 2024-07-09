@@ -9,6 +9,7 @@ interface JSONEmbed {
 			title: string;
 			description: string;
 			color: number;
+			timestamp: string;
 		}
 	];
 	username: string;
@@ -19,9 +20,9 @@ export class DiscordNotifications extends NotificationService {
 	public static async sendNotifications(controllers: ControllerNotification[]): Promise<void> {
 		for (const controller of controllers) {
 			for (const watcher of controller.watchers) {
-				const message = await this.buildMessage(controller, watcher);
+				const message = await DiscordNotifications.buildMessage(controller, watcher);
 				if (!message) continue;
-				await this.sendDiscordMessage(message, watcher);
+				await DiscordNotifications.sendDiscordMessage(message, watcher);
 			}
 		}
 	}
@@ -46,6 +47,7 @@ export class DiscordNotifications extends NotificationService {
 						title: embed.title,
 						description: NotificaionManager.replaceVariables(embed.text, notification.status.controller),
 						color: parseInt(embed.color.slice(1), 16),
+						timestamp: new Date().toISOString(),
 					},
 				],
 				username: embed.author,

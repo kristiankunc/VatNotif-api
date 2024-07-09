@@ -19,8 +19,15 @@ export class Vatsim {
 	private static async fetchControllers(): Promise<Controller[]> {
 		let controllers: Controller[] = [];
 
-		const res = await fetch("https://data.vatsim.net/v3/vatsim-data.json");
-		if (!res.ok) throw new Error("Failed to fetch VATSIM data");
+		let res;
+		try {
+			res = await fetch("https://data.vatsim.net/v3/vatsim-data.json");
+		} catch (e) {}
+
+		if (!res?.ok) {
+			console.log("Failed to fetch VATSIM data");
+			return this.lastFetchedControllers;
+		}
 
 		const data = await res.json();
 

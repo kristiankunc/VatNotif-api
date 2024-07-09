@@ -1,3 +1,4 @@
+import { normaliseCallsign } from "../lib/callsign";
 import { prisma } from "../lib/prisma";
 import { Controller } from "../lib/vatsim";
 
@@ -20,46 +21,34 @@ export class NotificaionManager {
 	public static notificationCallbacks: ((controllers: ControllerNotification[]) => Promise<void>)[] = [];
 
 	private static async getNotifications(controllers: ControllerStatus[]): Promise<ControllerNotification[]> {
-		const controllerCace = new Map<string, Controller>();
+		const controllerCache = new Map<string, Controller>();
 		controllers.forEach((controllerStatus) => {
-			controllerCace.set(controllerStatus.controller.callsign, controllerStatus.controller);
+			controllerCache.set(controllerStatus.controller.callsign, controllerStatus.controller);
 		});
 
 		const watchers = new Map<Controller, number[]>();
 
-		const watchingPairs = await prisma.watchedCallsign.findMany({
-			where: {
-				OR: Array.from(controllerCace.keys()).map((callsign) => ({
-					callsign: {
-						contains: callsign,
-					},
-				})),
-			},
-			select: {
-				callsign: true,
-				cid: true,
-			},
-		});
-		watchingPairs.forEach((pair) => {
-			const controller = controllerCace.get(pair.callsign);
-			if (controller) {
-				if (!watchers.has(controller)) {
-					watchers.set(controller, []);
-				}
-				watchers.get(controller)?.push(pair.cid);
+		for (const controller of controllers) {
+			let res = await prisma.$queryRaw`SELECT cid FROM WatchedCallsign WHERE ${normaliseCallsign(
+				controller.controller.callsign
+			)} LIKE callsign`;
+
+			// @ts-ignore
+			for (const watch of res) {
+				if (!watchers.has(controller.controller)) watchers.set(controller.controller, []);
+				watchers.get(controller.controller)?.push(watch.cid);
 			}
-		});
+		}
 
 		const notifications: ControllerNotification[] = [];
 
-		controllers.forEach((controllerStatus) => {
-			const controller = controllerStatus.controller;
-			const watcherCids = watchers.get(controller) ?? [];
+		for (const controller of controllers) {
+			if (!watchers.has(controller.controller)) continue;
 			notifications.push({
-				status: controllerStatus,
-				watchers: watcherCids,
+				status: controller,
+				watchers: watchers.get(controller.controller) || [],
 			});
-		});
+		}
 
 		return notifications;
 	}
