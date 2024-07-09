@@ -1,19 +1,17 @@
 import express from "express";
 import { Vatsim } from "./lib/vatsim";
 import http from "http";
-import { Server } from "socket.io";
 import { NotificaionManager } from "./notifications/manager";
 import { DiscordNotifications } from "./notifications/discord";
+import swaggerUi from "swagger-ui-express";
+import YAML from "yamljs";
 
 const app = express();
+
+const swaggerDocument = YAML.load("./swagger.yaml");
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 const server = http.createServer(app);
-/*
-const io = new Server(server, {
-	cors: {
-		origin: "*",
-	},
-});
-*/
 
 Vatsim.mainUpdater();
 setInterval(() => Vatsim.mainUpdater(), 15000);
@@ -25,7 +23,12 @@ app.all("/controllers/*", (req, res, next) => {
 	next();
 });
 
-app.get("/controllers/new", (req, res) => {
+app.get("/", (req, res) => {
+	res.setHeader("content-type", "text/plain");
+	res.send("VatNotif API, docs @");
+});
+
+app.get("/controllers/up", (req, res) => {
 	res.json(Vatsim.upControllers);
 });
 

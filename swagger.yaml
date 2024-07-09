@@ -1,0 +1,73 @@
+openapi: 3.0.0
+info:
+    title: VatNotif API
+    description: API specification for VatNotif. Provides info about active controllers on the VATSIM network.
+    version: 0.2.0
+servers:
+    - url: https://api.vatnotif.kristn.co.uk/
+      description: Main production server
+paths:
+    /:
+        get:
+            summary: Get the root endpoint
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    message:
+                                        type: string
+    /controllers/online:
+        get:
+            summary: Get online controllers
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: "#/components/schemas/Controller"
+    /controllers/up:
+        get:
+            summary: Get new controllers from the latest update cycle (last 15-30 seconds)
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: "#/components/schemas/Controller"
+    /controllers/down:
+        get:
+            summary: Get controllers that got offline in the latest update cycle (last 15-30 seconds)
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: "#/components/schemas/Controller"
+
+components:
+    schemas:
+        Controller:
+            type: object
+            properties:
+                cid:
+                    type: integer
+                    format: int64
+                name:
+                    type: string
+                callsign:
+                    type: string
+                frequency:
+                    type: string
