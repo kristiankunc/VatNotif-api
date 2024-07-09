@@ -25,7 +25,7 @@ app.all("/controllers/*", (req, res, next) => {
 
 app.get("/", (req, res) => {
 	res.setHeader("content-type", "text/plain");
-	res.send("VatNotif API, docs @");
+	res.send("VatNotif API, docs @ /docs");
 });
 
 app.get("/controllers/up", (req, res) => {
@@ -40,6 +40,6 @@ app.get("/controllers/online", (req, res) => {
 	res.json(Vatsim.lastFetchedControllers);
 });
 
-server.listen(3000, () => {
-	console.log("listening on *:3000");
+server.listen(3001, () => {
+	console.log("listening on *:3001");
 });
