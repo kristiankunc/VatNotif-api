@@ -44,7 +44,7 @@ export class DiscordNotifications extends NotificationService {
 				content: null,
 				embeds: [
 					{
-						title: embed.title,
+						title: NotificaionManager.replaceVariables(embed.title, notification.status.controller),
 						description: NotificaionManager.replaceVariables(embed.text, notification.status.controller),
 						color: parseInt(embed.color.slice(1), 16),
 						timestamp: new Date().toISOString(),
