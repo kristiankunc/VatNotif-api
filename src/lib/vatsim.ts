@@ -45,7 +45,7 @@ export class Vatsim {
 			if (
 				ignoredCids.includes(controller.cid) ||
 				!normalisedCallsign.includes("_") ||
-				(controller.frequency === "199.998" && !controller.callsign.includes("OBS"))
+				(controller.frequency === "199.998" && !controller.callsign.includes("OBS") && !controller.callsign.includes("SUP"))
 			)
 				continue;
 
