@@ -1,5 +1,6 @@
 import { ControllerStatus, NotificaionManager } from "../notifications/manager";
 import { normaliseCallsign } from "./callsign";
+import { logger } from "./logger";
 import { prisma } from "./prisma";
 
 export interface Controller {
@@ -25,7 +26,7 @@ export class Vatsim {
 		} catch (e) {}
 
 		if (!res?.ok) {
-			console.log("Failed to fetch VATSIM data");
+			logger.error("Failed to fetch data from VATSIM, using last fetched data", res?.status);
 			return this.lastFetchedControllers;
 		}
 
@@ -73,6 +74,7 @@ export class Vatsim {
 	}
 
 	public static async mainUpdater() {
+		logger.info("Starting fetching cycle");
 		const currentControllers = await this.fetchControllers();
 		this.lastFetched = Date.now();
 
@@ -83,6 +85,9 @@ export class Vatsim {
 
 		const upControllers = await this.filterUpControllers(currentControllers);
 		const downControllers = await this.filterDownControllers(currentControllers);
+
+		logger.info(`Up controllers: ${upControllers.map((controller) => controller.callsign).join(", ") || "None"}`);
+		logger.info(`Down controllers: ${downControllers.map((controller) => controller.callsign).join(", ") || "None"}`);
 
 		NotificaionManager.sendNotifications(
 			upControllers

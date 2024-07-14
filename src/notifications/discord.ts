@@ -1,6 +1,7 @@
 import { DiscordEmbed } from "@prisma/client";
 import { prisma } from "../lib/prisma";
 import { ControllerNotification, NotificationService, NotificaionManager } from "./manager";
+import { logger } from "../lib/logger";
 
 interface JSONEmbed {
 	content: null;
@@ -19,6 +20,7 @@ interface JSONEmbed {
 export class DiscordNotifications extends NotificationService {
 	public static async sendNotifications(controllers: ControllerNotification[]): Promise<void> {
 		for (const controller of controllers) {
+			logger.info(`Sending notifications for ${controller.status.controller.callsign}, total of ${controller.watchers.length} watchers`);
 			for (const watcher of controller.watchers) {
 				const message = await DiscordNotifications.buildMessage(controller, watcher);
 				if (!message) continue;
@@ -67,7 +69,7 @@ export class DiscordNotifications extends NotificationService {
 		});
 
 		if (!res.ok) {
-			console.error(`Failed to send discord message to ${cid}`);
+			logger.error(`Failed to send discord message to ${cid}`, res.status);
 		}
 	}
 }

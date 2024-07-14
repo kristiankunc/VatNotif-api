@@ -5,6 +5,7 @@ import { NotificaionManager } from "./notifications/manager";
 import { DiscordNotifications } from "./notifications/discord";
 import swaggerUi from "swagger-ui-express";
 import YAML from "yamljs";
+import { logger } from "./lib/logger";
 
 const app = express();
 
@@ -16,7 +17,7 @@ const server = http.createServer(app);
 Vatsim.mainUpdater();
 setInterval(() => Vatsim.mainUpdater(), 15000);
 
-NotificaionManager.notificationCallbacks.push(DiscordNotifications.sendNotifications);
+//NotificaionManager.notificationCallbacks.push(DiscordNotifications.sendNotifications);
 
 app.all("/controllers/*", (req, res, next) => {
 	res.setHeader("Last-Modified", new Date(Vatsim.lastFetched).toUTCString());
@@ -41,5 +42,5 @@ app.get("/controllers/online", (req, res) => {
 });
 
 server.listen(3001, () => {
-	console.log("listening on *:3001");
+	logger.info("Server started on port 3001");
 });

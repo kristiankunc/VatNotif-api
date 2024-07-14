@@ -1,4 +1,5 @@
 import { normaliseCallsign } from "../lib/callsign";
+import { logger } from "../lib/logger";
 import { prisma } from "../lib/prisma";
 import { Controller } from "../lib/vatsim";
 
@@ -29,6 +30,7 @@ export class NotificaionManager {
 		const watchers = new Map<Controller, number[]>();
 
 		for (const controller of controllers) {
+			logger.info(`Getting watchers for ${controller.controller.callsign}`);
 			let res = await prisma.$queryRaw`SELECT cid FROM WatchedCallsign WHERE ${normaliseCallsign(
 				controller.controller.callsign
 			)} LIKE callsign`;
@@ -38,6 +40,8 @@ export class NotificaionManager {
 				if (!watchers.has(controller.controller)) watchers.set(controller.controller, []);
 				watchers.get(controller.controller)?.push(watch.cid);
 			}
+
+			logger.info(`Found ${watchers.get(controller.controller)?.length ?? 0} watchers for ${controller.controller.callsign}`);
 		}
 
 		const notifications: ControllerNotification[] = [];
