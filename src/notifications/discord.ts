@@ -24,6 +24,7 @@ export class DiscordNotifications extends NotificationService {
 				`Sending Discord notifications for ${controller.status.controller.callsign}, total of ${controller.watchers.length} watchers`
 			);
 			for (const watcher of controller.watchers) {
+				logger.info(`Sending Discord notification to ${watcher}`);
 				const message = await DiscordNotifications.buildMessage(controller, watcher);
 				if (!message) continue;
 				await DiscordNotifications.sendDiscordMessage(message, watcher);
