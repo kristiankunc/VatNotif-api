@@ -20,8 +20,11 @@ interface JSONEmbed {
 export class DiscordNotifications extends NotificationService {
 	public static async sendNotifications(controllers: ControllerNotification[]): Promise<void> {
 		for (const controller of controllers) {
-			logger.info(`Sending notifications for ${controller.status.controller.callsign}, total of ${controller.watchers.length} watchers`);
+			logger.info(
+				`Sending Discord notifications for ${controller.status.controller.callsign}, total of ${controller.watchers.length} watchers`
+			);
 			for (const watcher of controller.watchers) {
+				logger.info(`Sending Discord notification to ${watcher}`);
 				const message = await DiscordNotifications.buildMessage(controller, watcher);
 				if (!message) continue;
 				await DiscordNotifications.sendDiscordMessage(message, watcher);

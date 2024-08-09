@@ -31,8 +31,9 @@ export class NotificaionManager {
 
 		for (const controller of controllers) {
 			logger.info(`Getting watchers for ${controller.controller.callsign}`);
-			let res = await prisma.$queryRaw`SELECT cid FROM WatchedCallsign WHERE ${normaliseCallsign(
-				controller.controller.callsign
+			let res = await prisma.$queryRaw`SELECT cid FROM WatchedCallsign WHERE ${normaliseCallsign(controller.controller.callsign).replace(
+				"_",
+				"\\_"
 			)} LIKE callsign`;
 
 			// @ts-ignore
