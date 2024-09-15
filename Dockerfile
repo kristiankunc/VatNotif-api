@@ -5,4 +5,5 @@ COPY prisma/schema.prisma /app/prisma/schema.prisma
 RUN npm install
 RUN npx prisma generate
 COPY . /app
+ENV NODE_ENV=production
 CMD ["npm", "run", "start"]
