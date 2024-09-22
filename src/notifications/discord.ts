@@ -63,6 +63,10 @@ export class DiscordNotifications extends NotificationService {
 	}
 
 	private static async sendDiscordMessage(message: { url: string; data: JSONEmbed }, cid: number): Promise<void> {
+		if (!message.url.startsWith("https://discord.com/api/webhooks/")) {
+			logger.error(`Invalid Discord URL for ${cid}`);
+			return;
+		}
 		const res = await fetch(message.url, {
 			method: "POST",
 			headers: {
