@@ -34,17 +34,10 @@ export class Vatsim {
 
 		if (data.general.update < this.lastFetched) return this.lastFetchedControllers;
 
-		const ignoredCids = await prisma.ignoredCid.findMany({
-			select: {
-				cid: true,
-			},
-		});
-
 		for (const controller of data.controllers) {
 			const normalisedCallsign = normaliseCallsign(controller.callsign);
 
 			if (
-				ignoredCids.includes(controller.cid) ||
 				!normalisedCallsign.includes("_") ||
 				(controller.frequency === "199.998" && !controller.callsign.includes("OBS") && !controller.callsign.includes("SUP"))
 			)

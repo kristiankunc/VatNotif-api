@@ -14,10 +14,6 @@ model WatchedCallsign {
     topdown  Boolean @default(false)
 }
 
-model IgnoredCid {
-    cid Int @id @unique
-}
-
 model DiscordEmbed {
     id      Int     @id @default(autoincrement())
     cid     Int
