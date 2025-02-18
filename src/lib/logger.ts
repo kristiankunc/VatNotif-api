@@ -1,7 +1,16 @@
 import winston from "winston";
 import DailyRotateFile from "winston-daily-rotate-file";
 
-const transports = [];
+const transports: winston.transport[] = [
+	new winston.transports.Console({
+		format: winston.format.combine(
+			winston.format.timestamp({
+				format: "DD-MM-YYYY HH:mm:ss",
+			}),
+			winston.format.printf(({ level, message, timestamp }) => `${timestamp} ${level.toUpperCase()}: ${message}`)
+		),
+	}),
+];
 
 if (process.env.NODE_ENV === "production") {
 	transports.push(
@@ -11,17 +20,6 @@ if (process.env.NODE_ENV === "production") {
 			zippedArchive: true,
 			maxSize: "5m",
 			maxFiles: "7d",
-		})
-	);
-} else {
-	transports.push(
-		new winston.transports.Console({
-			format: winston.format.combine(
-				winston.format.timestamp({
-					format: "DD-MM-YYYY HH:mm:ss",
-				}),
-				winston.format.printf(({ level, message, timestamp }) => `${timestamp} ${level.toUpperCase()}: ${message}`)
-			),
 		})
 	);
 }

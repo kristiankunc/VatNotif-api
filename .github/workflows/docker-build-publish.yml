@@ -29,3 +29,7 @@ jobs:
             - name: Push Docker image
               run: |
                   docker push ${{ secrets.DOCKERHUB_USERNAME }}/vatnotif-api:latest
+
+            - name: Alert Watchtower
+              run: |
+                  curl -H "Authorization: Bearer ${{ secrets.WATCHTOWER_HTTP_API_TOKEN }}" https://watchtower.kristn.co.uk/v1/update
