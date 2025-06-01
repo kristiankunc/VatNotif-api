@@ -14,7 +14,7 @@
 	"dependencies": {
 		"@prisma/client": "^6.6.0",
 		"express": "^5.1.0",
-		"prisma": "^6.6.0",
+		"prisma": "^6.8.2",
 		"socket.io": "^4.8.1",
 		"swagger-ui-express": "^5.0.1",
 		"winston": "^3.17.0",
