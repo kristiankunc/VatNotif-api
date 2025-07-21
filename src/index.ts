@@ -19,7 +19,7 @@ setInterval(() => Vatsim.mainUpdater(), 15000);
 
 NotificaionManager.notificationCallbacks.push(DiscordNotifications.sendNotifications);
 
-app.all("/controllers/*", (req, res, next) => {
+app.all("/controllers", (req, res, next) => {
 	res.setHeader("Last-Modified", new Date(Vatsim.lastFetched).toUTCString());
 	next();
 });
