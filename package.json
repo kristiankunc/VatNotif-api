@@ -5,8 +5,8 @@
 	"main": "index.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"dev": "npx tsx src/index.ts --watch",
-		"start": "npx tsx src/index.ts"
+		"dev": "tsx src/index.ts --watch",
+		"start": "tsx src/index.ts"
 	},
 	"keywords": [],
 	"author": "",
@@ -17,6 +17,7 @@
 		"prisma": "^6.6.0",
 		"socket.io": "^4.8.1",
 		"swagger-ui-express": "^5.0.1",
+		"tsx": "^4.20.3",
 		"winston": "^3.17.0",
 		"winston-daily-rotate-file": "^5.0.0",
 		"yamljs": "^0.3.0"
