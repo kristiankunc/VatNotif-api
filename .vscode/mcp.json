@@ -1,0 +1,10 @@
+{
+	"servers": {
+		"prisma": {
+			"type": "stdio",
+			"command": "npx",
+			"args": ["-y", "prisma", "mcp"]
+		}
+	},
+	"inputs": []
+}

@@ -4,7 +4,7 @@ info:
     description: API specification for VatNotif. Provides info about active controllers on the VATSIM network.
     version: 0.2.0
 servers:
-    - url: https://api.vatnotif.kristn.co.uk/
+    - url: https://vatnotif-api.kristn.co.uk/
       description: Main production server
 paths:
     /:

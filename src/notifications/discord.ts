@@ -1,4 +1,4 @@
-import { DiscordEmbed } from "@prisma/client";
+import { DiscordEmbed } from "../../prisma/generated/client";
 import { prisma } from "../lib/prisma";
 import { ControllerNotification, NotificationService, NotificaionManager } from "./manager";
 import { logger } from "../lib/logger";
@@ -11,7 +11,7 @@ interface JSONEmbed {
 			description: string;
 			color: number;
 			timestamp: string;
-		}
+		},
 	];
 	username: string;
 	avatar_url: string;
@@ -21,7 +21,7 @@ export class DiscordNotifications extends NotificationService {
 	public static async sendNotifications(controllers: ControllerNotification[]): Promise<void> {
 		for (const controller of controllers) {
 			logger.info(
-				`Sending Discord notifications for ${controller.status.controller.callsign}, total of ${controller.watchers.length} watchers`
+				`Sending Discord notifications for ${controller.status.controller.callsign}, total of ${controller.watchers.length} watchers`,
 			);
 			for (const watcher of controller.watchers) {
 				logger.info(`Sending Discord notification to ${watcher}`);

@@ -4,7 +4,7 @@ The api server used to track online controllers for VatNotif (https://vatnotif.k
 
 This api is **free** to use by anyone without any API key required.
 
-Documentation for this api can be found at https://api.vatnotif.kristn.co.uk/docs
+Documentation for this api can be found at https://vatnotif-api.kristn.co.uk/docs
 
 ## Development setup
 A MYSQL database is required, the prisma schema is defined [prisma/schema.prisma](https://github.com/kristiankunc/VatNotif-api/blob/main/prisma/schema.prisma).

@@ -12,9 +12,9 @@
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
-		"@prisma/client": "^6.6.0",
+		"@prisma/client": "^6.19.3",
 		"express": "^5.1.0",
-		"prisma": "^6.6.0",
+		"prisma": "^6.19.3",
 		"socket.io": "^4.8.1",
 		"swagger-ui-express": "^5.0.1",
 		"tsx": "^4.20.3",
@@ -24,10 +24,10 @@
 	},
 	"devDependencies": {
 		"@types/express": "^5.0.1",
-		"@types/node": "^22.15.3",
+		"@types/node": "^26.0.0",
 		"@types/swagger-ui-express": "^4.1.8",
 		"@types/yamljs": "^0.2.34",
 		"socket.io-client": "^4.8.1",
-		"typescript": "^5.8.2"
+		"typescript": "^6.0.3"
 	}
 }
