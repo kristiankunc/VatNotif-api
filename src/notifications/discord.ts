@@ -1,4 +1,4 @@
-import { DiscordEmbed } from "../../prisma/generated/client";
+import type { DiscordEmbed } from "../../prisma/generated/client/client";
 import { prisma } from "../lib/prisma";
 import { ControllerNotification, NotificationService, NotificaionManager } from "./manager";
 import { logger } from "../lib/logger";

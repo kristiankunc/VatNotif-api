@@ -3,6 +3,7 @@
 	"version": "1.0.0",
 	"description": "",
 	"main": "index.js",
+	"type": "module",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"dev": "tsx src/index.ts --watch",
@@ -12,9 +13,11 @@
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
-		"@prisma/client": "^6.19.3",
+		"@prisma/adapter-mariadb": "^7.9.1",
+		"@prisma/client": "^7.9.1",
+		"dotenv": "^16.6.1",
 		"express": "^5.1.0",
-		"prisma": "^6.19.3",
+		"prisma": "^7.9.1",
 		"socket.io": "^4.8.1",
 		"swagger-ui-express": "^5.0.1",
 		"tsx": "^4.20.3",
